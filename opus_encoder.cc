@@ -34,7 +34,10 @@ void OpusEncoderWrapper::Encode(std::vector<int16_t>&& pcm, std::function<void(s
     if (in_buffer_.empty()) {
         in_buffer_ = std::move(pcm);
     } else {
-        in_buffer_.insert(in_buffer_.end(), pcm.begin(), pcm.end());
+        in_buffer_.reserve(in_buffer_.size() + pcm.size());
+        for (auto& sample : pcm) {
+            in_buffer_.push_back(std::move(sample));
+        }
     }
 
     while (in_buffer_.size() >= frame_size_) {
